@@ -9,15 +9,15 @@ kepada pemilik rumah.
 
 # Pembagian Tugas
 
-!Rizki Halasan!
+<b>Rizki Halasan</b>
 1. Open The Door
 2. Database for Arduino
 
-!Leo Lambarita Nadeak!
+<b>Leo Lambarita Nadeak</b>
 1. Turn On The Lights
 2. Input Password
 
 
-!Robby Syaifullah!
+<b>Robby Syaifullah</b>
 1. isDoorOpen
 2. isBroken

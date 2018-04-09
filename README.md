@@ -7,6 +7,25 @@ akan disimpan di database. Namun, jika sesorang memuka pintu tanpa memasukkan
 <i>password</i> yang benar, maka arduino akan mengirimkan sms peingatan keamanan 
 kepada pemilik rumah.
 
+# Fitur
+## Input Password
+
+Memasukkan password dengan keypad.
+## Open The Door
+
+Membuka pintu ketika password yang dimasukkan pengguna benar.
+## isDoorOpen
+
+Mengecek apakah pintu terbuka.
+## Turn On The Light
+
+Menyalakan lampu sesuai status isDoorOpen dan mengatur intensitas lampu
+## isBroken
+
+Mengecek apakah pintu dibuka dengan cara yang benar (password yang dimasukkan sudah benar.
+## Database for Arduino
+
+Menyambungkan database pada sql dengan arduino. 
 # Pembagian Tugas
 
 <b>Rizki Halasan</b>

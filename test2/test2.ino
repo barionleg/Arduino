@@ -9,8 +9,28 @@
 
   http://www.arduino.cc/en/Tutorial/AnalogReadSerial
 */
-
 #include <Servo.h>
+#include <EEPROM.h>
+#include <LiquidCrystal_I2C.h>
+
+#include <Wire.h>
+
+
+LiquidCrystal_I2C lcd(0x3F, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+
+#include <DB.h>
+#include <string.h>
+
+#include <Time.h>
+
+
+#define MY_PINTU 1
+#define MY_USER 2
+
+// pin untuk 7segment
+int latchPin = 5; //pin 12 on the 595
+int dataPin = 4; //pin 14 on the 595
+int clockPin = 6; //pin 11 on the 595
 
 int sensorPin = A1; // select the input pin for LDR 
 int sensorValue = 0; // variable to store the value coming from the sensor 
@@ -28,22 +48,84 @@ long duration;
 int distance;
 // the setup routine runs once when you press reset:
 
+DB db;
+struct Pintu {
+   char waktu[30];
+   char username[10];
+   char password[10];
+   char berhasil[5];
+} pintu;
+
+struct User{
+  char username[10];
+  char email[20];
+} user;
+
+int cekPassword(char* a, char* b){
+   if (strcmp(a, b)==0){
+    return 1; // Kalau 1 maka nilai a dan b sama
+   } else {
+    return 0; // Kalau 0 maka nilai a dan b berbeda
+   }
+}
+
+void databasePintu(){
+    sprintf(pintu.waktu, "10-04-2018 14:07:11");
+    sprintf(pintu.username, "leo");
+    sprintf(pintu.password, "masukaja");
+    Serial.println("Creating Table pintu...");  
+    db.create(MY_PINTU, sizeof(pintu));
+    db.open(MY_PINTU);
+    Serial.println("Creating records pintu");
+    db.append(DB_REC pintu);
+    db.read(1, DB_REC pintu);
+    Serial.print("waktu : "); Serial.println(pintu.waktu);
+    Serial.print("username : "); Serial.println(pintu.username);
+    Serial.print("password : "); Serial.println(pintu.password);
+}
+
+void databaseUser(){
+//  sprintf(user.username, "leo");
+//  sprintf(user.email, "leo@gmail.com");
+//  Serial.println("Creating Table user...");
+//  db.create(MY_USER, sizeof(user));
+  db.open(MY_USER);
+//  Serial.println("Creating records user");
+//  db.append(DB_REC user);
+  db.read(1, DB_REC user);
+  Serial.print("username : "); Serial.println(user.username);
+  Serial.print("email : "); Serial.println(user.email);
+}
+
 void setup() {
   // initialize serial communication at 9600 bits per second:
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+
+  pinMode(latchPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
   Serial.begin(9600);
+
+  lcd.begin(16,2);   // initialize the lcd for 16 chars 2 lines, turn on backlight
+ 
+  lcd.backlight();
+  delay(250);
+  lcd.noBacklight();
+  delay(250);
+  lcd.backlight();
+ 
+  lcd.setCursor(0,0);
+  lcd.print(" Input Password : ");
+  
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
-  // DISINI DICEK DULU KONDISI PINTU APA TERBUKA ATAU ENGGA
-  // JIKA TERNYATA BUKA DAN TERNYATA PENGECEKAN PASSWORD TIDAK PERNAH DILAKUKAN ATAU SALAG BERARTI,
-  // DILAKUKAN PENANGANAN UNTUK PENCURIAN
-  
+  lcd.setCursor(0,1);
   // read the input on analog pin 0:
   int sensorValue = analogRead(A0);
-  char pass[4];
+  char pass[4] = {' ', ' ', ' ', ' '};
   char input = 'x';  
 //
 //  while (sensorValue == 1023) {
@@ -83,17 +165,15 @@ void loop() {
     Serial.println(input);
     pass[counter] = input;
     counter++;
+    lcd.print(pass);
   }
-  
+
   if (counter == 4) {
-    
-    // DISINI DILAKUKAN PENGECEKAN PASSWORD
     for (int x = 0; x < 4; x++) {
       Serial.print(pass[x]);
     }
     Serial.println();
 
-    //BAGIAN INI DIJALANKAN APABILA PASSWORD YANG DIINPUT BENAR
     name_servo.attach(12);
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -114,9 +194,23 @@ void loop() {
       name_servo.write(i);
       delay(10);
       }
-    }
-//    delay(10000);
 
+        digitalWrite(latchPin, LOW);
+        shiftOut(dataPin, clockPin, MSBFIRST, 64);
+        digitalWrite(latchPin, HIGH);
+        delay(1000);
+        Serial.println("kosong");
+    }
+    else {
+        digitalWrite(latchPin, LOW);
+        shiftOut(dataPin, clockPin, MSBFIRST, 121);
+        digitalWrite(latchPin, HIGH);
+        delay(1000);
+        Serial.println("ciek");
+      }
+    name_servo.detach();
+//    delay(1000);
+    
     value = analogRead(sensorPin); // read the value from the sensor 
     value = constrain(value, 0, 700);
     value = map(value, 0, 700, 255, 0);
@@ -125,9 +219,10 @@ void loop() {
     analogWrite(ledPin, value);
     
     counter = 0;
-
-    // DISINI DILAKUKAN PENGINPUTAN DATA YANG INGIN DIMASUKKAN KE DALAM DATABASE
+    for (int u = 0; u < 4; u++) {
+      pass[u] = ' ';
+    }
   }
-
+ 
   delay(500);        // delay in between reads for stability
 }

@@ -14,6 +14,7 @@ struct Pintu {
    char waktu[30];
    char username[10];
    char password[10];
+   char berhasil[5];
 } pintu;
 
 struct User{
@@ -22,18 +23,20 @@ struct User{
 } user;
 
 void databasePintu(){
-    sprintf(pintu.waktu, "10-04-2018 14:07:11");
+    sprintf(pintu.waktu, "10-04-2018 20:07:11");
     sprintf(pintu.username, "leo");
     sprintf(pintu.password, "masukaja");
+    sprintf(pintu.berhasil, "ya");
     Serial.println("Creating Table pintu...");  
-    db.create(MY_PINTU, sizeof(pintu));
+    db.insert(MY_PINTU, sizeof(pintu));
     db.open(MY_PINTU);
     Serial.println("Creating records pintu");
     db.append(DB_REC pintu);
-    db.read(1, DB_REC pintu);
+    db.read(2, DB_REC pintu);
     Serial.print("waktu : "); Serial.println(pintu.waktu);
     Serial.print("username : "); Serial.println(pintu.username);
     Serial.print("password : "); Serial.println(pintu.password);
+    Serial.print("berhasil : "); Serial.println(pintu.berhasil);
 }
 
 void databaseUser(){

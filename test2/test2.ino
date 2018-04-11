@@ -48,7 +48,13 @@ long duration;
 int distance;
 // the setup routine runs once when you press reset:
 
+//isBroken yang menandakan ada yang membobol pintu
+int isBroken;
+//isOpen yang menandakan pintu telah terbuka
+int isOpen;
 DB db;
+char password[4];
+
 struct Pintu {
    char waktu[30];
    char username[10];
@@ -62,22 +68,31 @@ struct User{
 } user;
 
 int cekPassword(char* a, char* b){
-   if (strcmp(a, b)==0){
-    return 1; // Kalau 1 maka nilai a dan b sama
-   } else {
-    return 0; // Kalau 0 maka nilai a dan b berbeda
-   }
+  int match = 1;
+//  int j = 0;
+  for (int j = 0; j < 4; j++) {
+    if (a[j] != b[j]) match = 0;
+//    j++;
+  }
+
+  return match;
+//  }
+//   if (strcmp(a, b)==0){
+//    return 1; // Kalau 1 maka nilai a dan b sama
+//   } else {
+//    return 0; // Kalau 0 maka nilai a dan b berbeda
+//   }
 }
 
 void databasePintu(){
-    sprintf(pintu.waktu, "10-04-2018 14:07:11");
-    sprintf(pintu.username, "leo");
-    sprintf(pintu.password, "masukaja");
-    Serial.println("Creating Table pintu...");  
-    db.create(MY_PINTU, sizeof(pintu));
+    sprintf(pintu.waktu, "11-04-2018 14:07:11");
+    sprintf(pintu.username, "terserah");
+    sprintf(pintu.password, "1111");
+//    Serial.println("Creating Table pintu...");  
+//    db.create(MY_PINTU, sizeof(pintu));
     db.open(MY_PINTU);
-    Serial.println("Creating records pintu");
-    db.append(DB_REC pintu);
+//    Serial.println("Creating records pintu");
+//    db.append(DB_REC pintu);
     db.read(1, DB_REC pintu);
     Serial.print("waktu : "); Serial.println(pintu.waktu);
     Serial.print("username : "); Serial.println(pintu.username);
@@ -85,8 +100,8 @@ void databasePintu(){
 }
 
 void databaseUser(){
-//  sprintf(user.username, "leo");
-//  sprintf(user.email, "leo@gmail.com");
+  sprintf(user.username, "terserah");
+  sprintf(user.email, "terserah@gmail.com");
 //  Serial.println("Creating Table user...");
 //  db.create(MY_USER, sizeof(user));
   db.open(MY_USER);
@@ -98,6 +113,7 @@ void databaseUser(){
 }
 
 void setup() {
+  
   // initialize serial communication at 9600 bits per second:
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
@@ -106,7 +122,17 @@ void setup() {
   pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   Serial.begin(9600);
+  databasePintu();
+  databaseUser();
 
+  for (int x= 0; x < 4; x++) {
+    password[x] = pintu.password[x];
+  }
+  
+//Inisiasi awal isBroken dan isOpen
+  isBroken=0;
+  isOpen=0;
+  
   lcd.begin(16,2);   // initialize the lcd for 16 chars 2 lines, turn on backlight
  
   lcd.backlight();
@@ -122,10 +148,10 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  lcd.setCursor(0,1);
+  lcd.setCursor(counter,1);
   // read the input on analog pin 0:
   int sensorValue = analogRead(A0);
-  char pass[4] = {' ', ' ', ' ', ' '};
+  char pass[4];
   char input = 'x';  
 //
 //  while (sensorValue == 1023) {
@@ -133,47 +159,43 @@ void loop() {
 //  }
   // print out the value you read:
 //  Serial.println(sensorValue);
-  if (sensorValue >=551 && sensorValue <= 599) {
+  if (sensorValue >=551 && sensorValue <= 610) {
     input = '1';
-  } else if (sensorValue >=510 && sensorValue <= 520) {
+  } else if (sensorValue >=520 && sensorValue <= 549) {
     input = '2';
-  } else if (sensorValue >=310 && sensorValue <= 330) {
+  } else if (sensorValue >=370 && sensorValue <= 390) {
     input = '3';
-  } else if (sensorValue >=700 && sensorValue <= 720) {
+  } else if (sensorValue >=701 && sensorValue <= 734) {
     input = '4';
-  } else if (sensorValue >= 680 && sensorValue <= 699) {
+  } else if (sensorValue >= 680 && sensorValue <= 700) {
     input = '5';
-  } else if (sensorValue >= 600 && sensorValue <= 630) {
+  } else if (sensorValue >= 611 && sensorValue <= 630) {
     input = '6';
-  } else if (sensorValue >= 780 && sensorValue <= 789) {
+  } else if (sensorValue >= 783 && sensorValue <= 799) {
     input  = '7';
-  } else if (sensorValue >= 760 && sensorValue <= 779) {
+  } else if (sensorValue >= 760 && sensorValue <= 782) {
     input = '8';
-  } else if (sensorValue >= 721 && sensorValue <= 739) {
+  } else if (sensorValue >= 735 && sensorValue <= 740) {
     input = '9';
-  } else if (sensorValue >= 825 && sensorValue <= 835) {
+  } else if (sensorValue >= 840 && sensorValue <= 859) {
     input = '*';
-  } else if (sensorValue >= 790 && sensorValue <= 800) {
+  } else if (sensorValue >= 800 && sensorValue <= 819) {
     input = '#';
-  } else if (sensorValue >= 815 && sensorValue <= 825) {
+  } else if (sensorValue >= 820 && sensorValue <= 839) {
     input = '0';  
   } else {
     input = 'x';
   }
   
   if (input != 'x') {
-    Serial.println(input);
+//    Serial.println(input);
     pass[counter] = input;
     counter++;
-    lcd.print(pass);
+    lcd.print(input);
   }
 
   if (counter == 4) {
-    for (int x = 0; x < 4; x++) {
-      Serial.print(pass[x]);
-    }
-    Serial.println();
-
+  
     name_servo.attach(12);
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -186,42 +208,74 @@ void loop() {
     // Calculating the distance
     distance= duration*0.034/2;
     // Prints the distance on the Serial Monitor
-    Serial.print("Distance: ");
-    Serial.println(distance);
+//    Serial.print("Distance: ");
+//    Serial.println(distance);
 
     if(distance <15){
-      for(i=0; i<=90; i++){
-      name_servo.write(i);
-      delay(10);
+      if( cekPassword(pass,password) == 1) {
+        
+        for(i=0; i<=90; i++){
+        name_servo.write(i);
+        delay(10);   
+        }
+
+        value = analogRead(sensorPin); // read the value from the sensor 
+        value = constrain(value, 0, 700);
+        value = map(value, 0, 700, 255, 0);
+      
+//        Serial.println(value);
+        analogWrite(ledPin, value);
+
+        lcd.setCursor(0,1);
+        lcd.print(" Pasword Benar");
       }
+
+        else{
+          lcd.setCursor(0,1);
+          lcd.print(" Pasword Salah");
+          }
 
         digitalWrite(latchPin, LOW);
         shiftOut(dataPin, clockPin, MSBFIRST, 64);
         digitalWrite(latchPin, HIGH);
         delay(1000);
-        Serial.println("kosong");
+//        Serial.println("kosong");
+        isOpen=0;
     }
     else {
+        isOpen=1;
         digitalWrite(latchPin, LOW);
         shiftOut(dataPin, clockPin, MSBFIRST, 121);
         digitalWrite(latchPin, HIGH);
         delay(1000);
-        Serial.println("ciek");
+//        Serial.println("ciek");
       }
+
     name_servo.detach();
 //    delay(1000);
     
-    value = analogRead(sensorPin); // read the value from the sensor 
-    value = constrain(value, 0, 700);
-    value = map(value, 0, 700, 255, 0);
-  
-    Serial.println(value);
-    analogWrite(ledPin, value);
+    
+
+    if(( cekPassword(pass,password) == 0) && isOpen){
+      isBroken = 1;
+      lcd.setCursor(0,1);
+      lcd.print(" Pasword Salah");
+    }
+
+    if(cekPassword(pass,password) == 1) {
+      lcd.setCursor(0,1);
+      lcd.print(" Pasword Benar");
+    }
+    if(isBroken == 1){
+      Serial.println("Peringatan Keamanan! Pintu telah dibuka secara paksa");
+      }
     
     counter = 0;
     for (int u = 0; u < 4; u++) {
       pass[u] = ' ';
     }
+    isBroken = 0;
+
   }
  
   delay(500);        // delay in between reads for stability

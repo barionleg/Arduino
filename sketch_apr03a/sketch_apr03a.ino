@@ -6,9 +6,9 @@
 *
 */
 // defines pins numbers
-const int trigPin = 9;
+const int trigPin = 11;
 const int LEDPin = 8;
-const int echoPin = 10;
+const int echoPin = 12;
 int VCC = 7;
 int segA = 8;
 int segB = 11;

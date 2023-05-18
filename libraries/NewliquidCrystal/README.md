@@ -4,7 +4,8 @@
 
 # [INDEX](https://barionleg.github.io/Arduino/libraries/NewliquidCrystal/utility/docs/html/index.html)
 
-![LCD library](https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/I2CLCDextraIO_assemblyProject_small.jpg)
+![LCD library](![i2clcdextraio_assemblyproject_small](https://github.com/barionleg/Arduino/assets/102619282/f2f4d93d-ea5c-4d0a-b3d6-7e19c38d98c0)
+https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/I2CLCDextraIO_assemblyProject_small.jpg)
 
 Welcome to the *LCD Library* for **Arduino** and **Chipkit**. It is a derivate of the original LiquidCrystal Library as sourced in the Arduino SDK. It has been developed to be compatible with the current LiquidCrystal library, 
 its performance is almost 5 times faster and fully extendable if need be. 
